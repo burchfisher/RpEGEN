@@ -18,19 +18,17 @@
     % has been created for our needs but can be easily modified by someone
     % with Matlab experience.
 
-%% USER DEFINED VARIABLES
+%% SECTION 1 - USER DEFINED VARIABLES
 % Directory where the .mat files are located from RpEGEN.m
 cd ('/Users/burch/Documents/MATLAB/RpEGEN/JoVE_dataset/Output');
 
 % Load all the .mat files and give them names (since data is the workspace structure for them all)
-load('DMSO_4dpi.mat'); DMSO_4dpi = data; 
-load('IWR1_4dpi.mat'); IWR1_4dpi = data; 
-load('DMSO_9dpf.mat'); DMSO_9dpf = data; 
-load('IWR1_9dpf.mat'); IWR1_9dpf = data; 
-clear data
+load('DMSO_4dpi.mat');  
+load('IWR1_4dpi.mat');  
+load('DMSO_9dpf.mat');  
+load('IWR1_9dpf.mat');  
 
-
-%% Run permutation simulation to get the p-value comparing the medians of each bin
+%% SECTION 2 - Run permutation simulation to get the p-value comparing the medians of each bin
 data_A = DMSO_4dpi.RAW_data;    % ENTER the TWO DATASETS for comparison 
 data_B = IWR1_4dpi.RAW_data;
 bin_sz = 1;                     % ENTER HERE how many degrees you want each bin to encompasses
@@ -42,7 +40,7 @@ for x=bin_sz:bin_sz:180;
     ida = find(data_A.Angle >= x-bin_sz & data_A.Angle < x);
     idb = find(data_B.Angle >= x-bin_sz & data_B.Angle < x);
     pval(z,1) = permsim(data_A.Raw_Data(ida),data_B.Raw_Data(idb),reps);
-    status = sprintf('%.1f%% complete',100*z/(180/bin_sz))
+    perm_status = sprintf('%.1f%% complete',100*z/(180/bin_sz))
 end
 
 % This variable is used for plotting with pval in Fig 2B below
@@ -50,20 +48,35 @@ pval_x=bin_sz:bin_sz:180; pval_x=pval_x-(bin_sz/2);
 
 clear x z ida idb reps data_A data_B status
 
-%% ------------------------------------------------------------------------
-% PLOTS USING GRAMM (from JoVE article) 
-%--------------------------------------------------------------------------
+%% SECTION 3 - PLOTS USING GRAMM (from JoVE article) 
 % Figure 1 - Heatmaps of all the data for each group (here a 1 x 4 plot)
 
 % Need to have GRAMM toolbox in your Matlab path. You can download for free at 
 % https://www.mathworks.com/matlabcentral/fileexchange/54465-gramm-complete-data-visualization-toolbox-ggplot2-r-like
 
+% ENTER DATA HERE ---------------------------------------------------------
 cmap = 'turbo';     % Colormap used
-bin_num = [36 51]; % Number of bins across the x and y axes, respectively 
+bin_num = [36 51];  % Number of bins across the x and y axes, respectively 
 
 % Data for the first plot
-x1 = single(DMSO_4dpi.RAW_data.Angle);
-y1 = single(DMSO_4dpi.RAW_data.Raw_Data);
+x1 = single(DMSO_4dpi.RAW_data.Angle);      
+y1 = single(DMSO_4dpi.RAW_data.Raw_Data);   
+
+% Data for the second plot
+x2 = single(IWR1_4dpi.RAW_data.Angle);      
+y2 = single(IWR1_4dpi.RAW_data.Raw_Data);   
+
+% Data for the third plot
+x3 = single(DMSO_9dpf.RAW_data.Angle);      
+y3 = single(DMSO_9dpf.RAW_data.Raw_Data);   
+
+% Data for the fourth plot
+x4 = single(IWR1_9dpf.RAW_data.Angle);      
+y4 = single(IWR1_9dpf.RAW_data.Raw_Data);   
+%--------------------------------------------------------------------------
+
+% THE PLOTS
+figure('Position',[100 100 2000 500])   %[Bottom Left Width Height]
 
 g(1,1)=gramm('x',x1,'y',y1);
 g(1,1).stat_bin2d('nbins',bin_num,'geom','image');
@@ -71,29 +84,17 @@ g(1,1).set_continuous_color('colormap',cmap);
 g(1,1).set_title('DMSO_4dpi');
 g(1,1).no_legend();
 
-% Data for the second plot
-x2 = single(IWR1_4dpi.RAW_data.Angle);
-y2 = single(IWR1_4dpi.RAW_data.Raw_Data);
-
 g(1,2)=gramm('x',x2,'y',y2);
 g(1,2).stat_bin2d('nbins',bin_num,'geom','image');
 g(1,2).set_continuous_color('colormap',cmap);
 g(1,2).set_title('IWR1_4dpi');
 g(1,2).no_legend();
 
-% Data for the third plot
-x3 = single(DMSO_9dpf.RAW_data.Angle);
-y3 = single(DMSO_9dpf.RAW_data.Raw_Data);
-
 g(1,3)=gramm('x',x3,'y',y3);
 g(1,3).stat_bin2d('nbins',bin_num,'geom','image');
 g(1,3).set_continuous_color('colormap',cmap);
 g(1,3).set_title('DMSO_9dpf');
 g(1,3).no_legend();
-
-% Data for the fourth plot
-x4 = single(IWR1_9dpf.RAW_data.Angle);
-y4 = single(IWR1_9dpf.RAW_data.Raw_Data);
 
 g(1,4)=gramm('x',x4,'y',y4);
 g(1,4).stat_bin2d('nbins',bin_num,'geom','image');
@@ -112,7 +113,7 @@ g.set_text_options('font','Calibri',...
 
 g.axe_property('ylim',[0 255], 'xlim', [0 180], 'TickDir','out','XGrid','on',...
     'Ygrid','on','GridColor',[0.5 0.5 0.5], 'GridAlpha', 0.5, 'Linewidth', 1.5);
-figure('Position',[100 100 2000 500])
+
 g.set_names('x','Angular Distance (0=dorsal, 180=ventral)','y','Pixel Intensity (0-255)');
 
 % Draw the figure
@@ -130,7 +131,12 @@ clear x1 x2 x3 x4 y1 y2 y3 y4 f g cmap bin_num ans
 % https://www.mathworks.com/matlabcentral/fileexchange/54465-gramm-complete-data-visualization-toolbox-ggplot2-r-like
 
 % Reorganize data into a long table for the following plot
-data = [DMSO_9dpf.BIN_5_deg_all;DMSO_4dpi.BIN_5_deg_all;IWR1_9dpf.BIN_5_deg_all;IWR1_4dpi.BIN_5_deg_all];
+% ENTER DATA HERE ---------------------------------------------------------
+data = [DMSO_9dpf.BIN_5_deg_all;...
+    DMSO_4dpi.BIN_5_deg_all;...
+    IWR1_9dpf.BIN_5_deg_all;...
+    IWR1_4dpi.BIN_5_deg_all];
+%--------------------------------------------------------------------------
 grps = unique(data.Group);
 spdata = table([],[],[],[],[],'VariableNames',{'Group' 'Angle' 'Median' 'CI95U' 'CI95L'});
 
@@ -145,11 +151,11 @@ for x = 1:length(grps);
     spdata = [spdata; df];
 end
 
-% For plotting the CIs
-spDMSO_4 = spdata(find(strcmp(grps{1,1},spdata.Group)),:); 
-spDMSO_9 = spdata(find(strcmp(grps{2,1},spdata.Group)),:); 
-spIWR1_4 = spdata(find(strcmp(grps{3,1},spdata.Group)),:); 
-spIWR1_9 = spdata(find(strcmp(grps{4,1},spdata.Group)),:); 
+% For plotting the splined CIs 
+spA = spdata(find(strcmp(grps{1,1},spdata.Group)),:); 
+spB = spdata(find(strcmp(grps{2,1},spdata.Group)),:); 
+spC = spdata(find(strcmp(grps{3,1},spdata.Group)),:); 
+spD = spdata(find(strcmp(grps{4,1},spdata.Group)),:); 
 
 clear a b idx med ciu cil df x ans data grps
 
@@ -169,16 +175,16 @@ g(1,1).geom_line();
 g(1,1).geom_polygon('x',{[41 142 142 41]},'y',{[0 0 255 255]},'color',[0 0.6 1],'alpha',0.05);
 
 % Polygon for the median 95% confidence intervals for all 4 groups 
-a = [spDMSO_4.Angle; flip(spDMSO_4.Angle)]; b = [spDMSO_4.CI95U; flip(spDMSO_4.CI95L)];
+a = [spA.Angle; flip(spA.Angle)]; b = [spA.CI95U; flip(spA.CI95L)];
 g(1,1).geom_polygon('x',{a},'y',{b},'color',[1 0 0],'alpha',0.3);
 
-a = [spDMSO_9.Angle; flip(spDMSO_9.Angle)]; b = [spDMSO_9.CI95U; flip(spDMSO_9.CI95L)];
+a = [spB.Angle; flip(spB.Angle)]; b = [spB.CI95U; flip(spB.CI95L)];
 g(1,1).geom_polygon('x',{a},'y',{b},'color',[0 1 0],'alpha',0.3);
 
-a = [spIWR1_4.Angle; flip(spIWR1_4.Angle)]; b = [spIWR1_4.CI95U; flip(spIWR1_4.CI95L)];
+a = [spC.Angle; flip(spC.Angle)]; b = [spC.CI95U; flip(spC.CI95L)];
 g(1,1).geom_polygon('x',{a},'y',{b},'color',[0 0.6 1],'alpha',0.3);
 
-a = [spIWR1_9.Angle; flip(spIWR1_9.Angle)]; b = [spIWR1_9.CI95U; flip(spIWR1_9.CI95L)];
+a = [spD.Angle; flip(spD.Angle)]; b = [spD.CI95U; flip(spD.CI95L)];
 g(1,1).geom_polygon('x',{a},'y',{b},'color',[1 0 1],'alpha',0.3);
 
 % To move the legend into the figure

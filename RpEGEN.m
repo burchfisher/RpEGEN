@@ -2,6 +2,12 @@
 % Created by G. Burch Fisher beginning on 11/1/21
 % Last updated 11/27/21
 
+% REQUIREMENTS
+% 1) Image Processing Toolbox from Matlab
+% 2) ReadImageJROI Toolbox (Provided with RpEGEN but also available at:
+    % https://github.com/DylanMuir/ReadImageJROI
+    % Dylan Muir (2021). ReadImageJROI, GitHub. Retrieved November 1, 2021.
+
 % This program is free software; you can redistribute it and/or
 % modify it under the terms of the GNU General Public License
 % as published by the Free Software Foundation; either version 3
@@ -15,12 +21,12 @@
 %------------------------------------------------------------------------------------
 % USER-DEFINED VARIABLES
 % Directory locations for ROIs, IMGs, and where you want the outputs to go
-ROIdir = '/Users/burch/Documents/MATLAB/RpEGEN/JoVE_dataset/DMSO_4dpi/ROIs';
-IMGdir = '/Users/burch/Documents/MATLAB/RpEGEN/JoVE_dataset/DMSO_4dpi/TIFs 8-bit'
+ROIdir = '/Users/burch/Documents/MATLAB/RpEGEN/JoVE_dataset/IWR1_4dpi/ROIs';
+IMGdir = '/Users/burch/Documents/MATLAB/RpEGEN/JoVE_dataset/IWR1_4dpi/TIFs 8-bit'
 Outputdir = '/Users/burch/Documents/MATLAB/RpEGEN/JoVE_dataset/Output'
 
 % Output .mat file name
-filename = 'DMSO_4dpi.mat';
+filename = 'IWR1_4dpi.mat';
 
 % Location in the tif stack of the brightfield image
 bf_tif_loc = 3;     % 3rd tiff in the tiff stack
@@ -50,6 +56,8 @@ ROInames={tempnames.name};
 clear tempnames
 
 % Runs the matlab function ReadImageJROI on the ROIs
+% Dylan Muir (2021). ReadImageJROI (https://github.com/DylanMuir/ReadImageJROI), GitHub. Retrieved November 1, 2021.
+
 rois = ReadImageJROI(ROInames);
 
 % Creates a data structure with the sample name (column 1) and polygon vertices
@@ -267,10 +275,16 @@ sprintf('9 of 10 Steps Done - Saving .MAT file...')
 % Output directory
 cd (Outputdir)
 
+% Convert name to the group name from filename
+nm = strsplit(filename,'.');
+D.(nm{1,1}) = data;
+
 % Save the .mat file
-save(filename, 'data');
+save(filename, '-struct', 'D');
 
 sprintf('File Saved. Saving QC plots to output folder... ')
+
+clear D nm
 
 %% Save and plot QC plots to ouput folder as PDFs
 % Set up the figure
