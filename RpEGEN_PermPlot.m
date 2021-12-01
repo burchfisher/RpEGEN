@@ -167,14 +167,6 @@ for x = 1:length(grps);
     spdata = [spdata; df];
 end
 
-%--------------------------------------------------------------------------
-% For plotting the splined CIs
-% ENTER
-% spA = spdata(find(strcmp(grps{1,1},spdata.Group)),:); 
-% spB = spdata(find(strcmp(grps{2,1},spdata.Group)),:); 
-% spC = spdata(find(strcmp(grps{3,1},spdata.Group)),:); 
-% spD = spdata(find(strcmp(grps{4,1},spdata.Group)),:); 
-
 clear a b idx med ciu cil df x ans data grps
 
 %% FIGURE 2A - 5-degree binned median with 95% CI envelopes
