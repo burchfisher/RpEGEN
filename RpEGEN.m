@@ -21,9 +21,9 @@
 %------------------------------------------------------------------------------------
 % USER-DEFINED VARIABLES
 % Directory locations for ROIs, IMGs, and where you want the outputs to go
-ROIdir = '/Users/burch/Documents/MATLAB/RpEGEN/JoVE_dataset/IWR1_4dpi/ROIs';
-IMGdir = '/Users/burch/Documents/MATLAB/RpEGEN/JoVE_dataset/IWR1_4dpi/TIFs 8-bit'
-Outputdir = '/Users/burch/Documents/MATLAB/RpEGEN/JoVE_dataset/Output'
+ROIdir = '/Users/burch/Sync/GitHub/RpEGEN/JoVE_dataset/DMSO_4dpi/ROIs';
+IMGdir = '/Users/burch/Sync/GitHub/RpEGEN/JoVE_dataset/DMSO_4dpi/TIFs 8-bit';
+Outputdir = '/Users/burch/Sync/GitHub/RpEGEN/JoVE_dataset/Output';
 
 % Output .mat file name
 filename = 'IWR1_4dpi.mat';
@@ -108,7 +108,7 @@ clear x X
 
 %% Loop through the BW masks to create the centerline and distance data by calling centderfunc.m
 for z = 1:size(data.ROIBW,1);
-    [dist,xl,yl] = centderfunc(data.ROIBW{z, 1});
+    [dist,xl,yl] = centderfunc(data.ROIBW{z, 1}); % Call the centderfunc.m file here
     xl = transpose(xl);
     yl = transpose(yl);
     dist = transpose(dist);
