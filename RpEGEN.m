@@ -3,8 +3,12 @@
 % Last updated 11/27/21
 
 % REQUIREMENTS
-% 1) Image Processing Toolbox from Matlab
-% 2) ReadImageJROI Toolbox (Provided with RpEGEN but also available at:
+% 1) From MATLAB:
+    % Image Processing Toolbox
+    % Curve Fitting Toolbox
+    % Statistics and Machine Learning Toolbox
+
+% 2) ReadImageJROI Toolbox - provided with RpEGEN folder but also available at:
     % https://github.com/DylanMuir/ReadImageJROI
     % Dylan Muir (2021). ReadImageJROI, GitHub. Retrieved November 1, 2021.
 
@@ -12,7 +16,7 @@
 % modify it under the terms of the GNU General Public License
 % as published by the Free Software Foundation; either version 3
 % of the License, or (at your option) any later version.
-%
+
 % This program is distributed in the hope that it will be useful,
 % but WITHOUT ANY WARRANTY; without even the implied warranty of
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -21,8 +25,8 @@
 %------------------------------------------------------------------------------------
 % USER-DEFINED VARIABLES
 % Directory locations for ROIs, IMGs, and where you want the outputs to go
-ROIdir = '/Users/burch/Sync/GitHub/RpEGEN/JoVE_dataset/DMSO_4dpi/ROIs';
-IMGdir = '/Users/burch/Sync/GitHub/RpEGEN/JoVE_dataset/DMSO_4dpi/TIFs 8-bit';
+ROIdir = '/Users/burch/Sync/GitHub/RpEGEN/JoVE_dataset/IWR1_4dpi/ROIs';
+IMGdir = '/Users/burch/Sync/GitHub/RpEGEN/JoVE_dataset/IWR1_4dpi/TIFs 8-bit';
 Outputdir = '/Users/burch/Sync/GitHub/RpEGEN/JoVE_dataset/Output';
 
 % Output .mat file name
