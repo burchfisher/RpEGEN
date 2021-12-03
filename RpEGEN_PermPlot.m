@@ -30,10 +30,13 @@ load('IWR1_9dpf.mat');
 
 %% SECTION 2 - Run permutation simulation to get the p-value comparing the medians of each bin
 %--------------------------------------------------------------------------
-% ENTER the name of the TWO DATASETS for comparison but keep the .RAW_data after the name
+% ENTER DATA HERE
+% Enter the name of the TWO DATASETS for comparison but keep the .RAW_data after the name
 % Example: [Your_Group_Name].RAW_data 
+
 data_A = DMSO_4dpi.RAW_data;    
 data_B = IWR1_4dpi.RAW_data;
+
 %--------------------------------------------------------------------------
 bin_sz = 1;                     % Default is 1 degree bins but you can change the number of degrees you want each bin to encompass here
 pval = zeros(180/bin_sz,1);     % Intiating the variable that will store all of the p-values
