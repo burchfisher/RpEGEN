@@ -40,7 +40,7 @@ data_B = IWR1_4dpi.RAW_data;
 %--------------------------------------------------------------------------
 bin_sz = 1;                     % Default is 1 degree bins but you can change the number of degrees you want each bin to encompass here
 pval = zeros(180/bin_sz,1);     % Intiating the variable that will store all of the p-values
-reps = 5000;                    % # of permutations to run for each bin (bigger # = longer processing time but more statistically robust) 
+reps = 20000;                   % # of permutations to run for each bin (bigger # = longer processing time but more statistically robust) 
 
 for x=bin_sz:bin_sz:180;
     z=x/bin_sz;
@@ -64,8 +64,8 @@ clear x z ida idb reps data_A data_B perm_status
 % ENTER DATA HERE ---------------------------------------------------------
 % Example: Replace DMSO_4dpi, etc with your group names for each group below 
 
-% If you only have two data groups you can just comment x3-y4 out with %
-    % and the plot will still run
+% If you only have two data groups you can just comment x3-y4 out along
+% with the section g(1,3)... and g(1,4)... below
 
 % Data for the first plot
 x1 = single(DMSO_4dpi.RAW_data.Angle);      
@@ -187,7 +187,8 @@ g(1,1).geom_line();
 g(1,1).geom_polygon('x',{[41 142 142 41]},'y',{[0 0 255 255]},'color',[0 0.6 1],'alpha',0.05);
 
 
-% Polygon for the median 95% confidence intervals for all 4 groups 
+% Polygon for the median 95% confidence intervals for all 4 groups
+% YOU NEED TO COMMENT OUT 
 z = 1;
 a = [spdata.Angle(z:z+175); flip(spdata.Angle(z:z+175))]; b = [spdata.CI95U(z:z+175); flip(spdata.CI95L(z:z+175))];
 g(1,1).geom_polygon('x',{a},'y',{b},'color',[1 0 0],'alpha',0.3);
@@ -261,6 +262,6 @@ text(43,0.075,{'95% CI'},'Parent',g(2,1).facet_axes_handles(1),'FontName','Calib
 
 % Export figure to a PDF
 f = gcf;
-exportgraphics(f,'Median_pvalue_fig.pdf')
+exportgraphics(f,'Median_pvalue_5_deg_bin_fig.pdf')
 
 clear a b g f ans
