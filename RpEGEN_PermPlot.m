@@ -55,34 +55,21 @@ pval_x=bin_sz:bin_sz:180; pval_x=pval_x-(bin_sz/2);
 
 clear x z ida idb reps data_A data_B perm_status
 
-%% SECTION 3 - PLOTS USING GRAMM (from JoVE article) 
-% Figure 1 - Heatmaps of all the data for each group (here a 1 x 4 plot)
+%% HEATMAP FIGURE - PLOT USING GRAMM (Figure 9 A-D from JoVE article) 
+% Heatmap figure of all the data for each group (here a 1 x 4 plot)
 
 % Need to have GRAMM toolbox in your Matlab path. You can download for free at 
 % https://www.mathworks.com/matlabcentral/fileexchange/54465-gramm-complete-data-visualization-toolbox-ggplot2-r-like
 
 % ENTER DATA HERE ---------------------------------------------------------
-% Example: Replace DMSO_4dpi, etc with your group names for each group below 
+% Example: Replace groups in data and nms variables below. Can be any number 
+    % of groups but more than 4 may start to compress each plot horizontally.  
 
-% If you only have two data groups you can just comment x3-y4 out along
-% with the section g(1,3)... and g(1,4)... below
+data = [DMSO_9dpf; IWR1_9dpf; DMSO_4dpi; IWR1_4dpi];
+nms = {'DMSO_9dpf'; 'IWR1_9dpf'; 'DMSO_4dpi'; 'IWR1_4dpi'};
 
-% Data for the first plot
-x1 = single(DMSO_4dpi.RAW_data.Angle);      
-y1 = single(DMSO_4dpi.RAW_data.Raw_Data);   
-
-% Data for the second plot
-x2 = single(IWR1_4dpi.RAW_data.Angle);      
-y2 = single(IWR1_4dpi.RAW_data.Raw_Data);   
-
-% Data for the third plot
-x3 = single(DMSO_9dpf.RAW_data.Angle);      
-y3 = single(DMSO_9dpf.RAW_data.Raw_Data);   
-
-% Data for the fourth plot
-x4 = single(IWR1_9dpf.RAW_data.Angle);      
-y4 = single(IWR1_9dpf.RAW_data.Raw_Data);   
 %--------------------------------------------------------------------------
+clear g
 
 % Colormap Used
 cmap = 'turbo';    
@@ -91,31 +78,16 @@ cmap = 'turbo';
 bin_num = [36 51];  
 
 % THE PLOTS
-figure('Position',[100 100 2000 500])   %[Left Bottom Width Height]
+figure('Position',[100 100 500*numel(nms) 500])   %[Left Bottom Width Height]
 
-g(1,1)=gramm('x',x1,'y',y1);
-g(1,1).stat_bin2d('nbins',bin_num,'geom','image');
-g(1,1).set_continuous_color('colormap',cmap);
-g(1,1).set_title('DMSO_4dpi');
-g(1,1).no_legend();
-
-g(1,2)=gramm('x',x2,'y',y2);
-g(1,2).stat_bin2d('nbins',bin_num,'geom','image');
-g(1,2).set_continuous_color('colormap',cmap);
-g(1,2).set_title('IWR1_4dpi');
-g(1,2).no_legend();
-
-g(1,3)=gramm('x',x3,'y',y3);
-g(1,3).stat_bin2d('nbins',bin_num,'geom','image');
-g(1,3).set_continuous_color('colormap',cmap);
-g(1,3).set_title('DMSO_9dpf');
-g(1,3).no_legend();
-
-g(1,4)=gramm('x',x4,'y',y4);
-g(1,4).stat_bin2d('nbins',bin_num,'geom','image');
-g(1,4).set_continuous_color('colormap',cmap);
-g(1,4).set_title('IWR1_9dpf');
-g(1,4).no_legend();
+% Create the GRAMMS (e.g., g(1,1) = ...)
+for z = 1:numel(data);
+    g(1,z)=gramm('x',data(z).RAW_data.Angle,'y',data(z).RAW_data.Raw_Data);
+    g(1,z).stat_bin2d('nbins',bin_num,'geom','image');
+    g(1,z).set_continuous_color('colormap',cmap);
+    g(1,z).set_title(nms{z});
+    g(1,z).no_legend();
+end
 
 % General settings for the plot
 g.set_text_options('font','Calibri',...
@@ -138,21 +110,27 @@ g.draw();
 f = gcf;
 exportgraphics(f,'Heatmaps_fig.pdf')
 
-clear x1 x2 x3 x4 y1 y2 y3 y4 f g cmap bin_num ans
+clear x1 x2 x3 x4 y1 y2 y3 y4 f g cmap bin_num ans data nms z
 
-%% Figure 2 - Plot of A) group medians with 95% CI and B) p-values from permutation simulations (2 x 1 plot)
+%% GROUP RESULTS AND P-VALUE FIGURE - PLOT USING GRAMM (Figure 10 A,B from JoVE article)
+% Plot of A) group medians with 95% CI and B) p-values from permutation simulations (2 x 1 plot)
 
 % Need to have GRAMM toolbox in your Matlab path. You can download for free at 
 % https://www.mathworks.com/matlabcentral/fileexchange/54465-gramm-complete-data-visualization-toolbox-ggplot2-r-like
 
 % This section reorganizes some of the data into a long table to be used in
-% Part A of the following plot and splines the data
+    % Part A of the following plot and splines the data
 %--------------------------------------------------------------------------
 % ENTER DATA HERE
 % Here you should enter all the groups you want to plot with the .BIN_5_deg_all on the end of each
-% This can be more or less than the 4 examples below
+% This can be more or less than the 4 examples belowand you can also change
+    % to .BIN_1_deg_all or .BIN_10_deg_all to compare. 
     
-data = [DMSO_9dpf.BIN_5_deg_all; DMSO_4dpi.BIN_5_deg_all; IWR1_9dpf.BIN_5_deg_all; IWR1_4dpi.BIN_5_deg_all];
+data = [DMSO_4dpi.BIN_5_deg_all; DMSO_9dpf.BIN_5_deg_all; IWR1_4dpi.BIN_5_deg_all; IWR1_9dpf.BIN_5_deg_all];
+nms = {'DMSO_4dpi'; 'DMSO_9dpf'; 'IWR1_4dpi';  'IWR1_9dpf'};
+
+% RGB triplets for coloring the 95% CI envelopes
+polcol = [1 0 0; 0 1 0; 0 0.6 1; 1 0 1];
 %--------------------------------------------------------------------------
 
 grps = unique(data.Group);
@@ -170,10 +148,11 @@ for x = 1:length(grps);
     spdata = [spdata; df];
 end
 
-clear a b idx med ciu cil df x ans data grps
+clear a b idx med ciu cil df x ans 
 
-%% FIGURE 2A - 5-degree binned median with 95% CI envelopes
-
+%--------------------------------------------------------------------------
+% FIGURE PART A - 5-degree binned median with 95% CI envelopes
+%--------------------------------------------------------------------------
 clear g
 
 % Set figure location
@@ -186,25 +165,13 @@ g(1,1).geom_line();
 % Polygon for the central section that has not regenerated 
 g(1,1).geom_polygon('x',{[41 142 142 41]},'y',{[0 0 255 255]},'color',[0 0.6 1],'alpha',0.05);
 
-
-% Polygon for the median 95% confidence intervals for all 4 groups
-% YOU NEED TO COMMENT OUT 
-z = 1;
-a = [spdata.Angle(z:z+175); flip(spdata.Angle(z:z+175))]; b = [spdata.CI95U(z:z+175); flip(spdata.CI95L(z:z+175))];
-g(1,1).geom_polygon('x',{a},'y',{b},'color',[1 0 0],'alpha',0.3);
-
-z = z+176;
-a = [spdata.Angle(z:z+175); flip(spdata.Angle(z:z+175))]; b = [spdata.CI95U(z:z+175); flip(spdata.CI95L(z:z+175))];
-g(1,1).geom_polygon('x',{a},'y',{b},'color',[0 1 0],'alpha',0.3);
-
-z = z+176;
-a = [spdata.Angle(z:z+175); flip(spdata.Angle(z:z+175))]; b = [spdata.CI95U(z:z+175); flip(spdata.CI95L(z:z+175))];
-g(1,1).geom_polygon('x',{a},'y',{b},'color',[0 0.6 1],'alpha',0.3);
-
-z = z+176;
-a = [spdata.Angle(z:z+175); flip(spdata.Angle(z:z+175))]; b = [spdata.CI95U(z:z+175); flip(spdata.CI95L(z:z+175))];
-g(1,1).geom_polygon('x',{a},'y',{b},'color',[1 0 1],'alpha',0.3);
-
+% Polygons for the median 95% confidence envelope for each group in spdata
+for x=1:numel(grps);
+    idx = find(strcmp(spdata.Group,nms{x})==1);
+    a = {[spdata.Angle(idx); flip(spdata.Angle(idx))]}; 
+    b = {[spdata.CI95U(idx); flip(spdata.CI95L(idx))]};
+    g(1,1).geom_polygon('x',a,'y',b,'color',polcol(x,:),'alpha',0.3);
+end
 
 % To move the legend into the figure
 g(1,1).set_layout_options('legend_position',[0.8 0.885 0.1 0.1]) %We detach the legend from the plot and move it to the top right
@@ -227,8 +194,8 @@ g(1,1).set_names('x','Angular Distance (0=dorsal, 180=ventral)','y','Median Pixe
 clear z
 
 %--------------------------------------------------------------------------
-%Figure 2B - 1-degree binned p-values from permutation simulation
-
+%FIGURE PART B - 1-degree binned p-values from permutation simulation
+%--------------------------------------------------------------------------
 % Set the data source and tpe of plot
 g(2,1)=gramm('x',pval_x,'y',pval);
 g(2,1).geom_bar('dodge',0,'width',bin_sz,'FaceColor',[0.7 0 1],'EdgeColor','k', 'Linewidth', 1);
