@@ -1,6 +1,6 @@
 %% RpEGEN
 % Created by G. Burch Fisher beginning on 11/1/21
-% Last updated 11/27/21
+% Last updated 1/10/22
 
 % REQUIREMENTS
 % 1) From MATLAB:
@@ -24,16 +24,18 @@
 
 %------------------------------------------------------------------------------------
 % USER-DEFINED VARIABLES
-% Directory locations for ROIs, IMGs, and where you want the outputs to go
-ROIdir = '/Users/burch/Sync/GitHub/RpEGEN/JoVE_dataset/IWR1_4dpi/ROIs';
-IMGdir = '/Users/burch/Sync/GitHub/RpEGEN/JoVE_dataset/IWR1_4dpi/TIFs 8-bit';
-Outputdir = '/Users/burch/Sync/GitHub/RpEGEN/JoVE_dataset/Output';
+% Directory locations for ROIs, IMGs, and where you want the outputs to go.
+% NOTE: Directory addresses have different slash directions on PC vs Mac
+
+ROIdir = '/Users/name/Desktop/RpEGEN/JoVE_dataset/DMSO_4dpi/ROIs';
+IMGdir = '/Users/name/Desktop/RpEGEN/JoVE_dataset/DMSO_4dpi/TIFs 8-bit';
+Outputdir = '/Users/name/Desktop/RpEGEN/JoVE_dataset/Output';
 
 % Output .mat file name
-filename = 'IWR1_4dpi.mat';
+filename = 'DMSO_4dpi.mat';
 
 % Location in the tif stack of the brightfield image
-bf_tif_loc = 3;     % 3rd tiff in the tiff stack
+bf_tif_loc = 3;     % (e.g., 3rd tiff in the tiff stack here)
 
 % NO NEED TO ALTER ANYTHING BELOW HERE UNLESS YOU ARE MODIFYING THE CODE
 %------------------------------------------------------------------------------------

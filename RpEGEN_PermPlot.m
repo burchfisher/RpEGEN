@@ -1,6 +1,6 @@
 %% RpEGEN_PermPlot
 % Created by G. Burch Fisher beginning on 11/21/21
-% Last updated 11/24/21
+% Last updated 1/10/22
 
 % This is a script to run the permutation simulation that compares the median 
 % values across the binned raw data of two datasets to prodiuce p-values. P-values 
@@ -20,7 +20,7 @@
 
 %% SECTION 1 - USER DEFINED VARIABLES
 % Directory where the .mat files are located from RpEGEN.m
-cd ('/Users/burch/Sync/GitHub/RpEGEN/JoVE_dataset/Output');
+cd ('/Users/burch/Desktop/il34 RpEGEN/Output');
 
 % Load all the .mat files and give them names (since data is the workspace structure for them all)
 load('DMSO_4dpi.mat');  
@@ -34,13 +34,14 @@ load('IWR1_9dpf.mat');
 % Enter the name of the TWO DATASETS for comparison but keep the .RAW_data after the name
 % Example: [Your_Group_Name].RAW_data 
 
+% Dataset A and B for comparison
 data_A = DMSO_4dpi.RAW_data;    
 data_B = IWR1_4dpi.RAW_data;
 
 %--------------------------------------------------------------------------
 bin_sz = 1;                     % Default is 1 degree bins but you can change the number of degrees you want each bin to encompass here
 pval = zeros(180/bin_sz,1);     % Intiating the variable that will store all of the p-values
-reps = 20000;                   % # of permutations to run for each bin (bigger # = longer processing time but more statistically robust) 
+reps = 2000;                   % # of permutations to run for each bin (bigger # = longer processing time but more statistically robust) 
 
 for x=bin_sz:bin_sz:180;
     z=x/bin_sz;
@@ -66,10 +67,14 @@ clear x z ida idb reps data_A data_B perm_status
     % of groups but more than 4 may start to compress each plot horizontally.  
 
 data = [DMSO_9dpf; IWR1_9dpf; DMSO_4dpi; IWR1_4dpi];
-nms = {'DMSO_9dpf'; 'IWR1_9dpf'; 'DMSO_4dpi'; 'IWR1_4dpi'};
 
 %--------------------------------------------------------------------------
 clear g
+
+% To extract the group names into nms
+for x = 1:length(data);
+    nms{x,1} = data(x).BIN_1_deg_all.Group(1);
+end
 
 % Colormap Used
 cmap = 'turbo';    
@@ -126,11 +131,10 @@ clear x1 x2 x3 x4 y1 y2 y3 y4 f g cmap bin_num ans data nms z
 % This can be more or less than the 4 examples belowand you can also change
     % to .BIN_1_deg_all or .BIN_10_deg_all to compare. 
     
-data = [DMSO_4dpi.BIN_5_deg_all; DMSO_9dpf.BIN_5_deg_all; IWR1_4dpi.BIN_5_deg_all; IWR1_9dpf.BIN_5_deg_all];
-nms = {'DMSO_4dpi'; 'DMSO_9dpf'; 'IWR1_4dpi';  'IWR1_9dpf'};
+data = [DMSO_4dpi.BIN_5_deg_all; IWR1_4dpi.BIN_5_deg_all; DMSO_9dpf.BIN_5_deg_all; IWR1_9dpf.BIN_5_deg_all];
 
 % RGB triplets for coloring the 95% CI envelopes
-polcol = [1 0 0; 0 1 0; 0 0.6 1; 1 0 1];
+polcol = [1 0 0; 0 1 0; 0 0.6 1; 1 0 1]; 
 %--------------------------------------------------------------------------
 
 grps = unique(data.Group);
@@ -159,7 +163,7 @@ clear g
 figure('Position',[100 100 850 1600])
 
 % Set the data source and tpe of plot
-g(1,1)=gramm('x',spdata.Angle,'y',spdata.Median, 'color',spdata.Group);
+g(1,1)=gramm('x',spdata.Angle,'y',spdata.Median,'color',spdata.Group);
 g(1,1).geom_line();
 
 % Polygon for the central section that has not regenerated 
@@ -167,7 +171,7 @@ g(1,1).geom_polygon('x',{[41 142 142 41]},'y',{[0 0 255 255]},'color',[0 0.6 1],
 
 % Polygons for the median 95% confidence envelope for each group in spdata
 for x=1:numel(grps);
-    idx = find(strcmp(spdata.Group,nms{x})==1);
+    idx = find(strcmp(spdata.Group,grps{x})==1);   
     a = {[spdata.Angle(idx); flip(spdata.Angle(idx))]}; 
     b = {[spdata.CI95U(idx); flip(spdata.CI95L(idx))]};
     g(1,1).geom_polygon('x',a,'y',b,'color',polcol(x,:),'alpha',0.3);
@@ -231,4 +235,4 @@ text(43,0.075,{'95% CI'},'Parent',g(2,1).facet_axes_handles(1),'FontName','Calib
 f = gcf;
 exportgraphics(f,'Median_pvalue_5_deg_bin_fig.pdf')
 
-clear a b g f ans
+clear a b g f ans idx grps x polcol
