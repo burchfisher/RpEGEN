@@ -20,7 +20,7 @@
 
 %% SECTION 1 - USER DEFINED VARIABLES
 % Directory where the .mat files are located from RpEGEN.m
-cd ('/Users/burch/Desktop/il34 RpEGEN/Output');
+cd ('/Users/burch/Desktop/RpEGEN/Output');
 
 % Load all the .mat files and give them names (since data is the workspace structure for them all)
 load('DMSO_4dpi.mat');  
@@ -41,7 +41,7 @@ data_B = IWR1_4dpi.RAW_data;
 %--------------------------------------------------------------------------
 bin_sz = 1;                     % Default is 1 degree bins but you can change the number of degrees you want each bin to encompass here
 pval = zeros(180/bin_sz,1);     % Intiating the variable that will store all of the p-values
-reps = 2000;                   % # of permutations to run for each bin (bigger # = longer processing time but more statistically robust) 
+reps = 20000;                   % # of permutations to run for each bin (bigger # = longer processing time but more statistically robust) 
 
 for x=bin_sz:bin_sz:180;
     z=x/bin_sz;
