@@ -15,8 +15,10 @@ It = bwmorph(I,'thin','inf');               %Creates skeleton
 
 % Find the start endpoint coords - should always be in the top left quadrant and
     % the closest to the x axis
+idx = find(x < size(I,1)/2);
 idy = find(y < size(I,1)/2);
-idstart = find(x == min(x(idy)));
+idstart = intersect(idx,idy);
+idstart = min(idstart);
 xs = x(idstart); 
 ys = y(idstart);
 
