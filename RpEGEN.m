@@ -27,9 +27,9 @@
 % Directory locations for ROIs, IMGs, and where you want the outputs to go.
 % NOTE: Directory addresses have different slash directions on PC vs Mac
 
-ROIdir = '/Users/name/Desktop/RpEGEN/JoVE_dataset/DMSO_4dpi/ROIs';
-IMGdir = '/Users/name/Desktop/RpEGEN/JoVE_dataset/DMSO_4dpi/TIFs 8-bit';
-Outputdir = '/Users/name/Desktop/RpEGEN/JoVE_dataset/Output';
+ROIdir = '/Users/name/Desktop/JoVE_dataset/DMSO_4dpi/ROIs';
+IMGdir = '/Users/name/Desktop/JoVE_dataset/DMSO_4dpi/TIFs 8-bit';
+Outputdir = '/Users/name/Desktop/JoVE_dataset/Output';
 
 % Output .mat file name
 filename = 'DMSO_4dpi.mat';

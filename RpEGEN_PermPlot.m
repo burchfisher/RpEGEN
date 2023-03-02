@@ -20,7 +20,7 @@
 
 %% SECTION 1 - USER DEFINED VARIABLES
 % Directory where the .mat files are located from RpEGEN.m
-cd ('/Users/burch/Desktop/RpEGEN/Output');
+cd ('/Users/name/Desktop/RpEGEN/Output');
 
 % Load all the .mat files and give them names (since data is the workspace structure for them all)
 load('DMSO_4dpi.mat');  
