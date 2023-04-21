@@ -1,6 +1,6 @@
 %% RpEGEN_PermPlot
 % Created by G. Burch Fisher beginning on 11/21/21
-% Last updated 1/10/22
+% Last updated 4/21/23
 
 % This is a script to run the permutation simulation that compares the median 
 % values across the binned raw data of two datasets to prodiuce p-values. P-values 
@@ -160,14 +160,14 @@ clear a b idx med ciu cil df x ans
 clear g
 
 % Set figure location
-figure('Position',[100 100 850 1600])
+figure('Position',[100 100 850 1400])
 
 % Set the data source and tpe of plot
 g(1,1)=gramm('x',spdata.Angle,'y',spdata.Median,'color',spdata.Group);
 g(1,1).geom_line();
 
 % Polygon for the central section that has not regenerated 
-g(1,1).geom_polygon('x',{[41 142 142 41]},'y',{[0 0 255 255]},'color',[0 0.6 1],'alpha',0.05);
+g(1,1).geom_polygon('x',{[41 142 142 41]},'y',{[0 0 255 255]},'color',[0 0.6 1],'alpha',0.1);
 
 % Polygons for the median 95% confidence envelope for each group in spdata
 for x=1:numel(grps);
@@ -202,10 +202,10 @@ clear z
 %--------------------------------------------------------------------------
 % Set the data source and tpe of plot
 g(2,1)=gramm('x',pval_x,'y',pval);
-g(2,1).geom_bar('dodge',0,'width',bin_sz,'FaceColor',[0.7 0 1],'EdgeColor','k', 'Linewidth', 1);
+g(2,1).geom_bar('dodge',0,'width',bin_sz,'FaceColor',[0.8 0.8 0.8],'EdgeColor',[0.8 0.8 0.8], 'Linewidth', 1);
 
 % Polygon for the central section that has not regenerated 
-g(2,1).geom_polygon('x',{[41 142 142 41]},'y',{[0 0 1 1]},'color',[0 0.6 1],'alpha',0.05);
+g(2,1).geom_polygon('x',{[41 142 142 41]},'y',{[0 0 1 1]},'color',[0 0.6 1],'alpha',0.1);
 
 % Horizontal line showing the 0.05 p-value equal to the 95% CI
 g(2,1).geom_hline('yintercept',0.05,'style','k--','Linewidth', 3)
