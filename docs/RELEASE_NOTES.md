@@ -57,3 +57,20 @@ Width measurements are outside this release's scope. Use
 
 For reproducibility, record the software version, source data, settings, and
 exported results. Keep each archived software version in its own folder.
+
+## Release Verification
+
+All nine regression tests and the real-data GUI integration check passed on
+MATLAB R2026b from a clean checkout:
+
+- Fresh extraction of 11 DMSO 4 dpi eyes reproduced the saved raw intensity data
+  and all three binned tables exactly, with 11 QC PDFs and a saved run record.
+- The confidence tests reproduced all 936 saved example medians and limits.
+  Seeded permutation parity, whole-eye bootstrap calculations, serial/parallel
+  agreement, cancellation, loading, navigation, help, and PDF exports passed.
+- The full DMSO 4 dpi versus IWR1 4 dpi Auto comparison completed 180 one-degree
+  bins in 263.4 seconds using four CPU workers and 10,872-45,618 draws per bin.
+  Counts varied with the timing estimates. This is one verification run, not a
+  runtime guarantee or biological validation.
+
+These checks were run locally, not by GitHub CI. See the README for commands.
