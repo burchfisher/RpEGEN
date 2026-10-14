@@ -9,15 +9,20 @@ scripts, example dataset, and dependencies. This snapshot includes post-publicat
 fixes; earlier revisions remain in Git history. Keep old and new versions in
 separate folders. See the [v2.0.0 release notes](docs/RELEASE_NOTES.md) for the update.
 
-This repository includes scripts for the automatic quantification and visualization of RPE regeneration from images and ROIs as detailed in the following article:
- 
-Leach, L.L., G.B. Fisher, J.M. Gross (2022) Nitroreductase/metronidazole-mediated ablation and a MATLAB platform (RpEGEN) for studying regeneration of the zebrafish retinal pigment epithelium, Journal of Visualized Experiments : Jove. 2022 Mar(181). DOI: 10.3791/63658.  
+RpEGEN quantifies and visualizes retinal pigment epithelium (RPE) regeneration
+from images and regions of interest (ROIs). The original image-analysis workflow
+is described in:
 
-A detailed guide and video demonstration is provided in the JoVE paper for people lacking coding experience.
+Leach, L. L., Fisher, G. B., and Gross, J. M. (2022).
+"Nitroreductase/metronidazole-mediated ablation and a MATLAB platform (RpEGEN)
+for studying regeneration of the zebrafish retinal pigment epithelium."
+*Journal of Visualized Experiments*, 181.
+[doi:10.3791/63658](https://doi.org/10.3791/63658).
 
--------PLEASE CITE THE ABOVE ARTICLE IF POSSIBLE WHEN USING THESE SCRIPTS---------
+The JoVE article includes a detailed protocol and video demonstration.
+Please cite it when using RpEGEN and identify the software version used.
 
-Feel fee to download and modify the code to your individual requirements.
+You may download and modify the code under the terms of the [license](LICENSE).
 
 ## Documentation
 
@@ -29,7 +34,7 @@ Feel fee to download and modify the code to your individual requirements.
 
 These guides describe **v2.0.0**, released on **2026-10-14**.
 Existing compatible group MAT files can be opened without rerunning extraction.
-GRAMM is optional for the GUI and remains required only for the original-style
+GRAMM is not required by the GUI. It is required only for the original-style
 plotting sections of `RpEGEN_PermPlot.m`.
 
 ## MATLAB GUI
@@ -51,9 +56,9 @@ data. **Example Data** selects the supplied DMSO dataset and a separate
 `GUI_Output` folder. **Check Inputs** checks names, ROI geometry, image type,
 and the selected page before **Run Analysis** starts the existing pipeline.
 
-After analysis, **Quality Control** displays the image/ROI overlay, centerline
-angles, median intensities, and each sample's intensity profile. **Results**
-displays the original pooled binned tables and exports them to CSV. Existing
+After analysis, the **Quality Control** tab displays the image/ROI overlay,
+centerline angles, median intensities, and each sample's intensity profile.
+The **Results** tab displays pooled binned tables and exports them to CSV. Existing
 MAT files can be loaded without rerunning extraction. The original MAT and
 QC PDF outputs are preserved; an additional `<group>_run.mat` records settings,
 the input manifest, and processing output.
@@ -74,19 +79,9 @@ To inspect the supplied results immediately:
 RpEGEN_GUI('ResultsFile', fullfile(pwd, 'JoVE_dataset', 'Output', 'DMSO_4dpi.mat'))
 ```
 
-## EyeLayerWidth
-
-Width analysis is available in the separate
-**[EyeLayerWidth](https://github.com/burchfisher/EyeLayerWidth)** application and repository.
-RpEGEN remains focused on the published image/intensity-analysis scope, retaining
-its improved GUI, QC, heatmaps, median CIs, and permutation workflow. No intensity
-calculation or permutation setting changed as part of this separation.
-
-Launch `EyeLayerWidth_GUI` from its own project folder. It accepts existing full
-group MAT files and includes independent copies of all 44 example eyes. Linked
-width inspection, eye summaries, IQR blocks, group width comparisons with both
-point-based and whole-eye bootstrap CIs, contextual help, and PDF/CSV/MAT exports
-are preserved there. No intensity-analysis rerun is necessary.
+Saved group MAT files also contain images, ROI polygons, and centerlines that
+[EyeLayerWidth](https://github.com/burchfisher/EyeLayerWidth) can use for width
+measurements. Those files let you reuse the existing geometry without redrawing ROIs.
 
 ## Heatmaps and Group Comparisons
 
@@ -96,7 +91,7 @@ Groups** for the four supplied groups. Loading an existing file twice does not
 duplicate it. The table lets you rename plot labels, select which groups appear,
 and remove selected rows from the comparison without deleting files.
 
-**Heatmaps** shows pooled pixel distributions against dorsal-to-ventral angle.
+The **Heatmaps** view shows pooled pixel distributions against dorsal-to-ventral angle.
 Default bins span 5 degrees and 5 grayscale intensity units. All selected groups
 share fixed edges (0-180 degrees and 0-255 intensity) and the same color limits.
 These explicit shared edges can differ from the original GRAMM plot's automatic
@@ -108,7 +103,7 @@ angular column to 100 percent, allowing comparison of intensity distributions
 when groups contain different numbers of pixels. It still pools pixels and does
 not give each animal equal weight. Empty angular columns remain zero.
 
-**Median Profiles** overlays the saved pooled-pixel medians for the selected
+The **Median Profiles** view overlays the saved pooled-pixel medians for the selected
 1-, 5-, or 10-degree bins without spline smoothing. Both interval methods share
 one plot with one median curve per group. Independent **Pixel-based median CI (nominal
 95%)** and **Whole-eye bootstrap CI (95%)** checkboxes show either, both, or neither
@@ -122,7 +117,7 @@ eye images and heatmap image layers remain raster within the PDF.
 Bootstrap intervals use 5,000 whole-eye resamples with replacement within each
 group and a reproducible local random stream (seed 20261012). Each resample uses
 the same eye selection at every angle, pooling only that angle's pixels. The
-2.5th/97.5th percentiles of the resampled pooled medians give pointwise intervals,
+2.5th and 97.5th percentiles of the resampled pooled medians give pointwise intervals,
 not simultaneous confidence bands and not a median of per-eye medians. Original
 pixel weights are retained. These intervals assume independent eyes; shared
 wells or batches are not modeled. Results are cached by group and bin width for
@@ -157,9 +152,8 @@ References: [NIST median confidence limits](https://www.itl.nist.gov/div898/soft
 and [Lord et al., SuperPlots](https://pmc.ncbi.nlm.nih.gov/articles/PMC7265319/).
 
 This interface retains the published intensity calculations and pixel-level
-permutation statistic while adding bootstrap displays, runtime controls, and
-the separate **EyeLayerWidth** application. Significance testing is
-available in **Compare Groups > Permutation Test** and in the adapted
+permutation statistic while adding bootstrap displays and runtime controls.
+Significance testing is available in **Compare Groups > Permutation Test** and in the adapted
 `RpEGEN_PermPlot.m` script.
 Images must still follow the published dorsal-up,
 distal-left orientation and pointed ROI endpoint convention. Analysis runs
@@ -187,7 +181,7 @@ are hidden on this tab; the test has its own 1-, 5-, or 10-degree bin setting.
 
 **Auto** defaults to a five-minute soft budget and 10,000-50,000 permutations per
 bin. Its approximate 95% simulation half-width target is 0.002 near p=0.05,
-which aims for 45,618 draws when the timing estimate permits.
+corresponding to 45,618 draws when the timing estimate permits.
 **Manual** uses the chosen count in every bin. **Parallel CPU (up to 4)** is
 initially checked when the Parallel Computing Toolbox is licensed. **Run Test**
 displays completed-bin progress and elapsed time. **Cancel** discards the partial
@@ -199,14 +193,14 @@ bin, the 0.05 reference, and dark gray, capped pointwise 95% simulation-error
 bars at bin centers. **Show simulation intervals** is off by default; toggling it
 preserves zoom and does not rerun the test. Figure exports follow this checkbox;
 the results table and CSV/MAT exports always retain the interval limits.
-Open orange markers remain visible with bars hidden and indicate intervals that
+Hollow orange markers remain visible when the bars are hidden and indicate intervals that
 span 0.05, not an additional significance test. **Focus near p = 0.05** changes
 only the plotted y-range to 0-0.12. **Shade p < 0.05**, on by default, adds pale
 green background ribbons spanning bins below the unadjusted threshold. Adjacent
 bins share a ribbon; the shading does not indicate effect size or direction.
 Shading can be toggled without rerunning, preserves zoom, and is included in
 figure exports when enabled. P-values are not adjusted for multiple testing;
-zero still means no simulated exceedances were observed. **Results Table** lists
+zero still means no simulated exceedances were observed. The **Results Table** lists
 actual counts, exceedances, and simulation limits for every bin.
 
 **Export Results...** writes CSV or MAT; MAT also includes group/file identities,

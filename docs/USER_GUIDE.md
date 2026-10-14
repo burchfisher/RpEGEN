@@ -1,8 +1,7 @@
 # RpEGEN User Guide
 
-This guide covers the MATLAB GUI for image analysis, quality control, group
-intensity comparisons in **v2.0.0 (2026-10-14)**. Width analysis is provided
-separately by [EyeLayerWidth](https://github.com/burchfisher/EyeLayerWidth).
+This guide covers the MATLAB GUI for image analysis, quality control, and group
+intensity comparisons in **v2.0.0 (2026-10-14)**.
 
 The previous script-only workflow is available in the
 [Pre-GUI Script Archive](https://github.com/burchfisher/RpEGEN/releases/tag/pre-gui-archive).
@@ -30,7 +29,6 @@ code update, close and relaunch `RpEGEN_GUI` to load the new interface.
 - [Load groups and make heatmaps](#load-groups-and-make-heatmaps)
 - [Read median profiles and confidence intervals](#read-median-profiles-and-confidence-intervals)
 - [Run a permutation comparison](#run-a-permutation-comparison)
-- [Width analysis has moved](#width-analysis-has-moved)
 - [Save a reproducible analysis](#save-a-reproducible-analysis)
 - [Troubleshooting](#troubleshooting)
 
@@ -244,7 +242,6 @@ is the new whole-eye bootstrap interval.
 **One analysis run produces one group MAT.** Run each treatment group separately,
 then load those group MATs together in Compare Groups. No extraction rerun is
 needed just to make plots, compute bootstrap bands, or run permutations.
-Compatible full results can also be opened separately in EyeLayerWidth.
 
 ## Load Groups and Make Heatmaps
 
@@ -403,15 +400,6 @@ are redrawn rather than saved as exact screenshots of arbitrary manual zooms.
 for startup to finish. Changing test settings or loaded group identities clears
 the previous result; export before changing them. Exported permutation MATs are
 for records/programmatic use, not reloadable comparison sessions in the GUI.
-
-## Width Analysis Has Moved
-
-Width analysis is now in **EyeLayerWidth**, a separate MATLAB GUI and repository.
-Launch `EyeLayerWidth_GUI` from that project folder. Use Add Groups to open your
-existing full group MATs, or Example Groups for the independent test-data copies.
-No RpEGEN extraction rerun is needed. EyeLayerWidth retains per-eye profiles and
-geometry inspection, Eye Summary, IQR, group medians with both CI methods,
-contextual help, and all-eye exports. Consult its own User Guide for instructions.
 
 ## Save a Reproducible Analysis
 

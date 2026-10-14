@@ -52,9 +52,6 @@ The original intensity confidence-limit calculation still requires sufficiently
 populated bins; fewer than six pixels can cause extraction to fail. See
 [Changes and Migration](CHANGES_AND_MIGRATION.md) for these and other assumptions.
 
-Width measurements are outside this release's scope. Use
-[EyeLayerWidth](https://github.com/burchfisher/EyeLayerWidth) for layer-width analysis.
-
 For reproducibility, record the software version, source data, settings, and
 exported results. Keep each archived software version in its own folder.
 

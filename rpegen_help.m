@@ -15,7 +15,7 @@ switch char(topic)
             'Run Analysis: extracts intensities and centerlines and saves results. Replace overwrites this group MAT and matching QC PDFs, not source images or ROIs.'
             'Open Existing Results: loads a full group MAT into QC and Results. No extraction rerun is needed.'
             ''
-            'Compare Groups also loads saved group MATs independently. Width analyses are now in the separate EyeLayerWidth application.'
+            'Compare Groups also loads saved group MATs independently.'
             'After a code update, close and relaunch RpEGEN_GUI. An already-open GUI retains its earlier callbacks.'};
     case 'Quality Control'
         body = {

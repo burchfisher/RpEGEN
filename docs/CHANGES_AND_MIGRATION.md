@@ -7,8 +7,7 @@ For operating instructions, see the [User Guide](USER_GUIDE.md).
 
 The main transition is from editing scripts to using a GUI. The pooled-pixel
 intensity calculation and pixel-level permutation statistic are retained.
-Whole-eye bootstrap bands are an addition. Width analysis has moved to the
-separate EyeLayerWidth repository and is no longer part of the RpEGEN GUI.
+Whole-eye bootstrap bands are an addition.
 Plots and permutation runtime defaults have changed, so visual or stochastic
 output need not exactly match a previously exported figure.
 
@@ -43,9 +42,7 @@ in a separate folder for reproduction of analyses that used that snapshot.
 7. Check heatmap binning/normalization and CI display settings before exporting.
 8. Run new permutation comparisons deliberately: use Manual 20,000 for the
    published example's count, or record the current Auto settings and actual counts.
-9. For width measurements, open existing geometry in the separate EyeLayerWidth
-   application; follow its User Guide and save separate exports.
-10. Archive the code snapshot and outputs used for the new analysis.
+9. Archive the code snapshot and outputs used for the new analysis.
 
 Existing compatible results do **not** need intensity extraction repeated just
 to use the new interface. Re-extract when images, ROIs, group membership,
@@ -62,12 +59,6 @@ brightfield image with identical extents, plus the intensity profile below.
 All three GUI panels reserve matching space for colorbars. **Export PDFs** in QC
 regenerates the whole group's PDFs from saved results without extraction.
 
-On 2026-10-14, the Widths tab and its geometry helpers/tests were separated into
-EyeLayerWidth. Its independent GUI retains linked profiles, contextual help,
-per-eye and all-eye exports, and pooled group curves with point-based and
-whole-eye bootstrap confidence bands. RpEGEN's intensity calculations and
-permutation behavior were not changed by this separation.
-
 | Task | Published script workflow | Current GUI workflow |
 | --- | --- | --- |
 | Setup | Edit paths, output name, and TIFF-page variable in `RpEGEN.m`. | Setup fields, Example Data, Check Inputs, and Run Analysis. |
@@ -82,7 +73,6 @@ permutation behavior were not changed by this separation.
 | Median uncertainty | Saved pixel-based median limits. | Original limits retained, with optional whole-eye bootstrap intervals overlaid. |
 | Permutations | User-specified fixed count; published example 20,000. | Auto runtime/precision planning or exact Manual count, CPU parallelism, cancellation, and diagnostics. |
 | P-value display | Supplied plotting script uses bars and example-specific anatomical shading. | Bin-spanning steps, optional simulation intervals, uncertain-bin markers, and optional unadjusted p < 0.05 ribbons. |
-| Width analysis | Outside the published RpEGEN scope. | Separate EyeLayerWidth application; no Widths tab in RpEGEN. |
 | Plot dependency | GRAMM for `RpEGEN_PermPlot.m`. | GUI uses built-in plotting; GRAMM remains bundled for the older script workflow. |
 
 Publication figure exports now require PDF and explicitly request vector content
@@ -193,21 +183,9 @@ they are not an anatomical injury-zone annotation or an effect-size display.
 The retained intensity tables, whole-eye bootstrap, and pixel permutation test
 use lower-inclusive, upper-exclusive angle intervals. Thus exactly 180-degree
 pixels are excluded from their final intensity bin. GUI heatmaps include exactly
-180 degrees and intensity 255 in the final histogram bins. EyeLayerWidth profiles
-include exactly 180 degrees in their last bin. This difference is deliberate
+180 degrees and intensity 255 in the final histogram bins. This difference is deliberate
 compatibility behavior to record when comparing counts across views, not a
 silent repair of the published intensity tables.
-
-## Width Analysis Separation
-
-EyeLayerWidth is a standalone successor to the exploratory width workflow. Existing
-full RpEGEN group MATs can be opened there without conversion. It also bundles
-geometry-only copies of all 44 example eyes. Its local-normal algorithm, total
-25-unit window default, optional endpoint exclusion, IQR, and pooled group
-confidence-band calculations are retained. See EyeLayerWidth's migration record
-and User Guide for method details and limitations. This separation does not
-validate the measurements for photoreceptor regeneration or change the original
-RpEGEN image/intensity scope.
 
 ## Compatibility and Limitations
 
@@ -237,8 +215,7 @@ RpEGEN image/intensity scope.
 The development checks include reconstruction of saved medians and pixel-based
 CI limits in all 936 bins of the four supplied groups, fixed-count permutation
 and RNG parity, literal whole-eye bootstrap parity, serial/parallel agreement,
-GUI navigation/toggles/cancellation/exports. Width-specific geometry and GUI
-tests now live in EyeLayerWidth. These checks establish specific implementation
+GUI navigation/toggles/cancellation/exports. These checks establish specific implementation
 properties, not universal biological validity.
 
 Recent GUI verification used MATLAB R2026b. A measured example
@@ -272,5 +249,5 @@ features. In particular, distinguish:
 - pixel-level permutation evidence from independent-animal inference.
 
 Continue citing Leach et al. (2022) for RpEGEN. Do not attribute the new bootstrap
-implementation or EyeLayerWidth methods to the JoVE publication. Preserve the current [license](../LICENSE) and bundled
+implementation to the JoVE publication. Preserve the current [license](../LICENSE) and bundled
 dependency attribution when distributing the updated project.
