@@ -34,8 +34,10 @@ You may download and modify the code under the terms of the [license](LICENSE).
 
 These guides describe **v2.0.0**, released on **2026-10-14**.
 Existing compatible group MAT files can be opened without rerunning extraction.
-GRAMM is not required by the GUI. It is required only for the original-style
-plotting sections of `RpEGEN_PermPlot.m`.
+The GUI uses built-in MATLAB plotting. The older `RpEGEN_PermPlot.m` script
+and its GRAMM dependency are available in the pre-GUI archive, not the current
+checkout. For a smaller download without Git history, use GitHub's **Code >
+Download ZIP** or clone with `git clone --depth 1 https://github.com/burchfisher/RpEGEN.git`.
 
 ## MATLAB GUI
 
@@ -153,8 +155,8 @@ and [Lord et al., SuperPlots](https://pmc.ncbi.nlm.nih.gov/articles/PMC7265319/)
 
 This interface retains the published intensity calculations and pixel-level
 permutation statistic while adding bootstrap displays and runtime controls.
-Significance testing is available in **Compare Groups > Permutation Test** and in the adapted
-`RpEGEN_PermPlot.m` script.
+Significance testing is available in **Compare Groups > Permutation Test** and
+through the `rpegen_permutation_profile` helper.
 Images must still follow the published dorsal-up,
 distal-left orientation and pointed ROI endpoint convention. Analysis runs
 synchronously; wait for it to finish before closing the interface. A failed
@@ -219,14 +221,13 @@ preserve the original random draw sequence and output exactly for the same RNG
 state. Shuffled pixels are now processed in bounded batches rather than allocating
 all permutations at once. Empty, nonfinite, and non-column inputs are rejected.
 
-`RpEGEN_PermPlot.m` now defaults to `reps = 'auto'`, a **five-minute soft budget**
-for a whole comparison, and 10,000-50,000 permutations per bin. Auto times a short
+The GUI's Auto mode uses a **five-minute soft budget**
+for a whole comparison and 10,000-50,000 permutations per bin. Auto times a short
 calibration, discards its results, restores the RNG, and selects a fixed count
 before testing. It never uses significance or observed p-value changes to decide
 when to stop. Budget is divided across bins. The 10,000 minimum takes precedence,
 so a slow run can exceed the estimate; this is not a hard timeout. More demanding
-precision or a larger maximum can be explicitly requested. The legacy script's
-input-directory placeholder still needs to be set for your files.
+precision or a larger maximum can be explicitly requested through the helpers.
 
 ```matlab
 % One angular bin, with a time/precision compromise:
@@ -247,7 +248,7 @@ the validity of treating pixels as exchangeable. `rpegen_permutation_plan`
 calculates an uncapped, approximate fixed count for a requested half-width;
 the time-budgeted auto mode can deliberately choose fewer draws.
 
-The plotting script enables up to four CPU workers through
+The GUI enables up to four CPU workers through
 `rpegen_permutation_profile`. It reuses an existing pool or starts a four-thread
 pool and falls back to serial execution if unavailable. It does not install or
 purchase a toolbox. Time allocation accounts for worker count and startup.
@@ -256,7 +257,7 @@ counts give identical serial and parallel results, although they need not match
 an old unseeded script run. Existing pools are not closed or resized. Direct
 three-argument `permsim` calls retain their original RNG behavior.
 
-To run only the test, without the original GRAMM plotting script:
+To run a comparison from MATLAB code without opening the GUI:
 
 ```matlab
 [permutation_diagnostics, runInfo] = rpegen_permutation_profile( ...

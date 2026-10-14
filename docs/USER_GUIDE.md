@@ -60,7 +60,7 @@ MATLAB's Current Folder browser before running the launch command.
 | Statistics and Machine Learning Toolbox | Required by the extraction runner and statistical workflow. |
 | ReadImageJROI | Included; the GUI adds its folder to the path. |
 | Parallel Computing Toolbox | Optional for CPU acceleration of permutations; serial execution is available. |
-| GRAMM | Not required by the GUI. Still required by the plotting sections of `RpEGEN_PermPlot.m`. |
+| Plotting | Built-in MATLAB plotting; no GRAMM installation is needed. |
 
 An upgrade is not required solely to launch the original R2024b-targeted GUI.
 The newest GUI features have been verified on R2026b; compatibility with every

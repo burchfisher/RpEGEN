@@ -3,6 +3,13 @@
 Released October 14, 2026. This release adds a MATLAB GUI to the image and
 intensity-analysis workflow, with documentation and regression tests.
 
+## Post-Release Cleanup
+
+The current `main` branch no longer bundles GRAMM or `RpEGEN_PermPlot.m`.
+The GUI uses built-in MATLAB plotting, and the current command-line permutation
+helpers remain available. Both removed components are preserved in the pre-GUI
+archive and the unchanged v2.0.0 tag. This cleanup changes no analysis calculations.
+
 ## Archived Scripts
 
 The [Pre-GUI Script Archive](https://github.com/burchfisher/RpEGEN/releases/tag/pre-gui-archive)
@@ -25,7 +32,7 @@ paper. Older commits remain accessible in repository history.
 - Editable PDF figure exports, contextual help, a User Guide, and a detailed
   changes-and-migration record.
 
-The existing public example dataset and bundled dependencies are unchanged.
+In the tagged v2.0.0 release, the existing public example dataset and bundled dependencies are unchanged.
 Generated local analysis outputs are not part of this release.
 
 ## Start
@@ -36,7 +43,8 @@ MATs can be loaded without rerunning extraction.
 
 Verified on MATLAB R2026b. Image Processing, Curve Fitting, and Statistics and
 Machine Learning toolboxes are required; Parallel Computing Toolbox is optional.
-The GUI uses built-in plots. GRAMM remains bundled for the script plotting workflow.
+The GUI uses built-in plots. The tagged v2.0.0 release also bundled GRAMM for the
+script plotting workflow; the current `main` branch omits it as described above.
 
 ## Analysis Scope and Limitations
 

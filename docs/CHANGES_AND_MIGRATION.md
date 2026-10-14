@@ -73,7 +73,7 @@ regenerates the whole group's PDFs from saved results without extraction.
 | Median uncertainty | Saved pixel-based median limits. | Original limits retained, with optional whole-eye bootstrap intervals overlaid. |
 | Permutations | User-specified fixed count; published example 20,000. | Auto runtime/precision planning or exact Manual count, CPU parallelism, cancellation, and diagnostics. |
 | P-value display | Supplied plotting script uses bars and example-specific anatomical shading. | Bin-spanning steps, optional simulation intervals, uncertain-bin markers, and optional unadjusted p < 0.05 ribbons. |
-| Plot dependency | GRAMM for `RpEGEN_PermPlot.m`. | GUI uses built-in plotting; GRAMM remains bundled for the older script workflow. |
+| Plot dependency | GRAMM for `RpEGEN_PermPlot.m`. | GUI uses built-in plotting. The older script and GRAMM are available in the pre-GUI archive, not the current checkout. |
 
 Publication figure exports now require PDF and explicitly request vector content
 with a white background, including intensity group plots, permutation plots, and
@@ -197,8 +197,9 @@ silent repair of the published intensity tables.
   the first compatible structure.
 - `_run.mat`, width-export MATs, and permutation-export MATs are different formats,
   not replacement group results or saved GUI sessions.
-- GRAMM is optional for GUI users. The retained `RpEGEN_PermPlot.m` still needs
-  GRAMM, edited paths/group variables, and its script-specific plot configuration.
+- The current checkout does not include GRAMM or `RpEGEN_PermPlot.m`. Use the
+  pre-GUI archive for that plotting workflow. Current programmatic comparisons
+  use `rpegen_permutation_profile`, which does not require GRAMM.
 - The retained extraction's median-CI indexing can fail in bins with fewer than
   six pixels. Input preflight does not detect sparse angular bins; all three
   intensity resolutions are computed during extraction. This remains unresolved.
