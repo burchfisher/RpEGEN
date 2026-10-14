@@ -22,13 +22,11 @@ code update, close and relaunch `RpEGEN_GUI` to load the new interface.
 
 - [Installation and launch](#installation-and-launch)
 - [Try the example data](#try-the-example-data)
-- [Prepare your own inputs](#prepare-your-own-inputs)
-- [Run an analysis](#run-an-analysis)
-- [Review quality control](#review-quality-control)
-- [Inspect and export results](#inspect-and-export-results)
-- [Load groups and make heatmaps](#load-groups-and-make-heatmaps)
-- [Read median profiles and confidence intervals](#read-median-profiles-and-confidence-intervals)
-- [Run a permutation comparison](#run-a-permutation-comparison)
+- [MATLAB GUI workflow](#matlab-gui)
+- [Setup](#setup)
+- [Quality Control](#quality-control)
+- [Results](#results)
+- [Compare Groups](#compare-groups): [Heatmaps](#heatmaps), [Median Profiles](#median-profiles), [Permutation Test](#permutation-test)
 - [Save a reproducible analysis](#save-a-reproducible-analysis)
 - [Troubleshooting](#troubleshooting)
 
@@ -123,7 +121,25 @@ RpEGEN_GUI('ResultsFile', ...
     fullfile(pwd,'JoVE_dataset','Output','DMSO_4dpi.mat'))
 ```
 
-## Prepare Your Own Inputs
+## MATLAB GUI
+
+The sections below follow the tabs from left to right:
+**Setup > Quality Control > Results > Compare Groups**.
+Setup analyzes one group at a time. Quality Control
+and Results show that current group. Compare Groups loads multiple saved groups
+and has its own three views: **Heatmaps**, **Median Profiles**, and **Permutation Test**.
+
+Already have results? Use **Setup > Open Existing Results** for QC and Results,
+or **Compare Groups > Add Groups...** to compare saved groups directly. Loading
+only in Compare Groups does not populate the Quality Control or Results tabs.
+
+### Setup
+
+Use this tab to prepare and analyze one group's images, or load an existing group
+MAT without repeating extraction. For the supplied inputs, follow
+[Try the Example Data](#try-the-example-data); for your own data, start below.
+
+#### Prepare Your Own Inputs
 
 Process one treatment/time-point group at a time. Keep its TIFF images and
 matching FIJI ROIs in separate folders. One example layout is:
@@ -168,7 +184,7 @@ Apply consistent imaging and ROI criteria across groups. Check Inputs cannot
 decide whether an ROI correctly represents the tissue or whether image exposure
 is comparable across samples.
 
-## Run an Analysis
+#### Run an Analysis
 
 1. Set **ROI folder**, **Image folder**, **Output folder**, and **Group name**.
 2. Set **Brightfield page** to the correct page number.
@@ -188,7 +204,16 @@ the message and MATLAB Command Window, correct the cause, and rerun. A failed
 run can leave partial files; a MAT file alone does not prove the entire run and
 all QC exports completed.
 
-## Review Quality Control
+#### Open Existing Results
+
+Click **Open Existing Results** and choose the full `<group>.mat` file. This
+loads its saved images, geometry, and tables into Quality Control and Results.
+Do not select `<group>_run.mat`, which contains run settings rather than the
+group's measurements. No **Run Analysis** is needed for this route.
+
+Next, review the eyes in **Quality Control**.
+
+### Quality Control
 
 The QC view shows the image/ROI/centerline, centerline angular coordinates,
 centerline-associated median intensities, and the selected eye's intensity
@@ -221,7 +246,9 @@ in this GUI. Correct ROIs in FIJI and rerun the affected group. Record exclusion
 outside the app using predefined criteria; hiding a group in a plot does not
 exclude an eye from its saved data.
 
-## Inspect and Export Results
+Next, open **Results** to inspect and export the reviewed group's tables.
+
+### Results
 
 **Results** displays the current group's saved 1-, 5-, or 10-degree intensity
 tables. **Export Binned CSVs** writes all three tables, not just the selected one.
@@ -243,7 +270,15 @@ is the new whole-eye bootstrap interval.
 then load those group MATs together in Compare Groups. No extraction rerun is
 needed just to make plots, compute bootstrap bands, or run permutations.
 
-## Load Groups and Make Heatmaps
+Next, use **Compare Groups** to load the groups you want to compare.
+
+### Compare Groups
+
+Load the saved group files once, then move through **Heatmaps**, **Median Profiles**,
+and **Permutation Test**. The first two display the data; the third runs a
+separate statistical comparison when you click **Run Test**.
+
+#### Load Groups
 
 In **Compare Groups**, use **Add Groups...** to select multiple group MATs or
 **Add Current Results** to add the group loaded in Setup. Do not select
@@ -257,6 +292,11 @@ The group table lets you change plot labels and toggle **Show**. **Remove
 Selected** removes table entries from the comparison, not files from disk.
 The names and visibility choices are session settings, not edits to the source
 MAT. Loading files does not merge their animals into a new combined group.
+
+**Example Groups** loads the four supplied groups without extraction. It is
+different from **Example Data** in Setup; see the [example walkthrough](#try-the-example-data).
+
+#### Heatmaps
 
 **Heatmaps** is available immediately; no permutation test is required.
 
@@ -275,7 +315,7 @@ and heatmap image layers remain raster within the PDF rather than becoming
 individual editable vector objects. Keep the source MAT files for
 replotting data. Editing support depends on the PDF editor and available fonts.
 
-## Read Median Profiles and Confidence Intervals
+#### Median Profiles
 
 **Median Profiles** shows one pooled-pixel median curve per group, using the
 saved bins without the original plotting script's spline interpolation. The
@@ -327,7 +367,7 @@ bootstrap = rpegen_bootstrap_ci(group.RAW_data,group.IMGname,5);
 save('DMSO_4dpi_bootstrap_5deg.mat','bootstrap')
 ```
 
-## Run a Permutation Comparison
+#### Permutation Test
 
 1. Load at least two distinct groups in Compare Groups.
 2. Open **Permutation Test** and select **Group A** and **Group B**.
@@ -339,7 +379,7 @@ save('DMSO_4dpi_bootstrap_5deg.mat','bootstrap')
 The two selectors include all loaded groups, regardless of their Show checkboxes.
 Group-table and heatmap controls are hidden while this subtab is selected.
 
-### What is tested
+##### What Is Tested
 
 Within each angle bin, the test pools the two groups' pixels and shuffles them
 between groups while preserving their pixel counts. It compares the absolute
@@ -353,7 +393,7 @@ change or validate that permutation assumption. P-values are unadjusted across
 angle bins and across separate comparisons; no multiple-testing correction is
 applied.
 
-### Auto and Manual
+##### Auto and Manual
 
 Auto targets an approximate 95 percent simulation half-width of 0.002 near
 p = 0.05, subject to **10,000 to 50,000 draws per bin** and a soft runtime budget.
@@ -373,7 +413,7 @@ GPU. Failed/unavailable parallel startup can fall back to serial execution.
 Fixed-count runs use reproducible per-bin seeds. Auto counts can vary with
 timing even when the underlying seed is unchanged.
 
-### Read the plot
+##### Read the Plot
 
 | Element | Meaning |
 | --- | --- |

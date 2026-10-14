@@ -52,18 +52,40 @@ Curve Fitting, and Statistics and Machine Learning toolboxes. Recent
 GUI verification used R2026b. Parallel Computing Toolbox is optional for faster
 permutations. See the User Guide for the tested scope and dependencies.
 
+Follow the tabs in order: [Setup](#setup) > [Quality Control](#quality-control) >
+[Results](#results) > [Compare Groups](#compare-groups).
+For already-analyzed data, load a group MAT in Setup to review QC and Results,
+or load group MATs directly in Compare Groups to make comparisons without extraction.
+The **?** button explains the active tab or comparison view.
+
+### Setup
+
 Select the ROI, image, and output folders, enter a group name such as
 `DMSO_4dpi`, and select the TIFF page containing 8-bit grayscale brightfield
 data. **Example Data** selects the supplied DMSO dataset and a separate
 `GUI_Output` folder. **Check Inputs** checks names, ROI geometry, image type,
 and the selected page before **Run Analysis** starts the existing pipeline.
 
-After analysis, the **Quality Control** tab displays the image/ROI overlay,
-centerline angles, median intensities, and each sample's intensity profile.
-The **Results** tab displays pooled binned tables and exports them to CSV. Existing
-MAT files can be loaded without rerunning extraction. The original MAT and
-QC PDF outputs are preserved; an additional `<group>_run.mat` records settings,
-the input manifest, and processing output.
+**Example Data does not run the analysis.** Click **Run Analysis** to create the
+results and populate QC. Each run analyzes one treatment group and creates one
+group MAT file. Repeat for other treatments using their own inputs and group names.
+
+To skip extraction, use **Open Existing Results** in Setup. For example, load
+`JoVE_dataset/Output/DMSO_4dpi.mat`, or open it directly from MATLAB:
+
+```matlab
+RpEGEN_GUI('ResultsFile', fullfile(pwd, 'JoVE_dataset', 'Output', 'DMSO_4dpi.mat'))
+```
+
+Images must follow the published dorsal-up, distal-left orientation and pointed
+ROI endpoint convention. Wait for extraction to finish before closing the GUI.
+A failed run may leave partial outputs; correct the reported issue before rerunning.
+
+### Quality Control
+
+After analysis or loading existing results in Setup, **Quality Control** displays
+the image/ROI overlay, centerline angles, median intensities, and each sample's
+intensity profile. Check the ROI and centerline against the image before comparing groups.
 
 In Quality Control, use **Left Arrow / Right Arrow** or the previous/next buttons
 to move through samples. Page Up / Page Down also work. The counter
@@ -75,23 +97,41 @@ On macOS, **Show QC PDF in Finder** selects the sample's original PDF; double-cl
 it in Finder to open it. This avoids the unreliable MATLAB-to-Preview direct-open
 handoff. Other platforms retain **Open QC PDF**. No file permissions are changed.
 
-To inspect the supplied results immediately:
+**Export PDFs...** exports matching QC figures for every eye in the current group
+from saved results, without rerunning extraction.
 
-```matlab
-RpEGEN_GUI('ResultsFile', fullfile(pwd, 'JoVE_dataset', 'Output', 'DMSO_4dpi.mat'))
-```
+### Results
+
+Inspect the current group's pooled intensity tables at 1-, 5-, or 10-degree
+resolution. **Export Binned CSVs** exports all three tables, and **Open Output
+Folder** opens the folder containing the group MAT file.
+
+The `<group>.mat` file is the full result to load for QC and comparisons.
+`<group>_run.mat` records settings, the input manifest, and processing output;
+it is not a replacement group result. Each eye also has a QC PDF.
 
 Saved group MAT files also contain images, ROI polygons, and centerlines that
 [EyeLayerWidth](https://github.com/burchfisher/EyeLayerWidth) can use for width
 measurements. Those files let you reuse the existing geometry without redrawing ROIs.
 
-## Heatmaps and Group Comparisons
+### Compare Groups
 
 Open **Compare Groups** and use **Add Groups...** to select multiple saved group
 MAT files, **Add Current Results** for the current QC dataset, or **Example
 Groups** for the four supplied groups. Loading an existing file twice does not
 duplicate it. The table lets you rename plot labels, select which groups appear,
 and remove selected rows from the comparison without deleting files.
+
+**Example Groups** loads four already-analyzed groups; it does not run extraction
+or populate QC and Results. If you just ran Example Data, avoid also adding that
+newly generated result alongside the four supplied groups: it duplicates the
+DMSO example eyes under a different file path. Wait for the loading dialog to
+finish before continuing.
+
+Use the views below in order to inspect distributions, compare median curves,
+and then run a permutation comparison. Loading groups does not run the test.
+
+#### Heatmaps
 
 The **Heatmaps** view shows pooled pixel distributions against dorsal-to-ventral angle.
 Default bins span 5 degrees and 5 grayscale intensity units. All selected groups
@@ -104,6 +144,9 @@ bins. The heatmap view scrolls when many groups are selected.
 angular column to 100 percent, allowing comparison of intensity distributions
 when groups contain different numbers of pixels. It still pools pixels and does
 not give each animal equal weight. Empty angular columns remain zero.
+Use **Export Figure...** to save the heatmaps as a PDF.
+
+#### Median Profiles
 
 The **Median Profiles** view overlays the saved pooled-pixel medians for the selected
 1-, 5-, or 10-degree bins without spline smoothing. Both interval methods share
@@ -116,64 +159,14 @@ profile to vector PDF without modifying source MATs. Figure exports use a white
 background and preserve vector plot elements and text for publication editing;
 eye images and heatmap image layers remain raster within the PDF.
 
-Bootstrap intervals use 5,000 whole-eye resamples with replacement within each
-group and a reproducible local random stream (seed 20261012). Each resample uses
-the same eye selection at every angle, pooling only that angle's pixels. The
-2.5th and 97.5th percentiles of the resampled pooled medians give pointwise intervals,
-not simultaneous confidence bands and not a median of per-eye medians. Original
-pixel weights are retained. These intervals assume independent eyes; shared
-wells or batches are not modeled. Results are cached by group and bin width for
-the current GUI session. Sparse bins with fewer than two contributing eyes or
-empty bootstrap draws have no bootstrap band, with a status message. Missing or
-inconsistent raw eye IDs disable that group's bootstrap band, not its pixel-based CI plot.
-No extraction rerun is needed. Close and relaunch the GUI to load code updates.
+Both bands ask how precisely the group median is estimated. The pixel-based CI
+treats each pixel as independent and can be very narrow. The whole-eye bootstrap
+asks how much the same pooled median could move with a different sample of eyes.
+Neither band shows the spread of pixel values. Toggle them without rerunning
+extraction; see the [User Guide](docs/USER_GUIDE.md#median-profiles) for examples
+and the resampling details.
 
-### Confidence interval audit
-
-The original calculation uses sorted pixel intensities at rounded ranks
-`n/2 +/- 1.96*sqrt(n/4)`. It is a normal approximation, not an exact 95%
-binomial interval. Exact symmetric order-statistic limits use ranks `r` and
-`n-r+1`, with `r` chosen from binomial tail probabilities. The current extraction
-also indexes zero for bins containing fewer than six pixels, including empty
-bins; it needs small-bin handling before use on sparse datasets.
-
-The audit reproduced every saved median and both limits in all 936 bins across
-the four supplied groups (1-, 5-, and 10-degree tables), plus the 234 bins in
-`GUI_Output/DMSO_4dpi.mat`. Compared with exact symmetric binomial ranks,
-130 of the 936 supplied intervals would change, by at most two intensity units.
-This is a numerical comparison only: it does not validate the independence
-assumption. Pixels within the same eye are correlated, larger pixel counts give
-eyes unequal weight, and these pointwise intervals are neither between-animal
-confidence intervals nor simultaneous 95% bands over the entire profile.
-
-For treatment inference, preserve each animal's profile and account for any
-shared treatment well or experimental batch. The independent treatment unit
-must be established before selecting animal-level or hierarchical resampling.
-The legacy extraction and saved MAT files are unchanged by this display update.
-References: [NIST median confidence limits](https://www.itl.nist.gov/div898/software/dataplot/refman1/auxillar/mediancl.htm)
-and [Lord et al., SuperPlots](https://pmc.ncbi.nlm.nih.gov/articles/PMC7265319/).
-
-This interface retains the published intensity calculations and pixel-level
-permutation statistic while adding bootstrap displays and runtime controls.
-Significance testing is available in **Compare Groups > Permutation Test** and
-through the `rpegen_permutation_profile` helper.
-Images must still follow the published dorsal-up,
-distal-left orientation and pointed ROI endpoint convention. Analysis runs
-synchronously; wait for it to finish before closing the interface. A failed
-run may leave partial outputs; rerun after correcting the reported issue.
-
-For batch processing, the same adapter can be called directly:
-
-```matlab
-config = struct('ROIdir', '/path/to/ROIs', ...
-    'IMGdir', '/path/to/TIFs', 'Outputdir', '/path/to/output', ...
-    'GroupName', 'DMSO_4dpi', 'Channel', 3, 'Overwrite', false);
-[data, outputFile] = rpegen_run(config);
-```
-
-## Permutation Runtime and Precision
-
-### Permutation Test tab
+#### Permutation Test
 
 Load two or more group MAT files (or use **Example Groups**), then select
 **Permutation Test** in Compare Groups. Pick different **Group A** and **Group B**
@@ -205,11 +198,73 @@ figure exports when enabled. P-values are not adjusted for multiple testing;
 zero still means no simulated exceedances were observed. The **Results Table** lists
 actual counts, exceedances, and simulation limits for every bin.
 
+Simulation intervals describe uncertainty in the calculated p-value from using
+a finite number of shuffles. They help show whether more simulations might
+change which side of 0.05 a result falls on; they do not measure biological variability.
+
 **Export Results...** writes CSV or MAT; MAT also includes group/file identities,
 settings, seed, execution details, and completion time. **Export Figure...** saves
 the current p-value view to vector PDF. Changes to inputs or calculation settings
 clear the previous result and disable export until a new run completes. Plot-only
 changes do not recalculate. Analysis and group editing are locked during testing.
+
+For a full walkthrough, including file meanings, statistical explanations, and
+troubleshooting, see the [User Guide](docs/USER_GUIDE.md).
+
+## Technical Reference
+
+The sections below cover calculations and programmatic use, rather than steps
+needed to operate the GUI. The published intensity calculations and pixel-level
+permutation statistic are retained.
+
+### Confidence Intervals
+
+Bootstrap intervals use 5,000 whole-eye resamples with replacement within each
+group and a reproducible local random stream (seed 20261012). Each resample uses
+the same eye selection at every angle, pooling only that angle's pixels. The
+2.5th and 97.5th percentiles of the resampled pooled medians give pointwise intervals,
+not simultaneous confidence bands and not a median of per-eye medians. Original
+pixel weights are retained. These intervals assume independent eyes; shared
+wells or batches are not modeled. Results are cached by group and bin width for
+the current GUI session. Sparse bins with fewer than two contributing eyes or
+empty bootstrap draws have no bootstrap band, with a status message. Missing or
+inconsistent raw eye IDs disable that group's bootstrap band, not its pixel-based CI plot.
+
+The original calculation uses sorted pixel intensities at rounded ranks
+`n/2 +/- 1.96*sqrt(n/4)`. It is a normal approximation, not an exact 95%
+binomial interval. Exact symmetric order-statistic limits use ranks `r` and
+`n-r+1`, with `r` chosen from binomial tail probabilities. The current extraction
+also indexes zero for bins containing fewer than six pixels, including empty
+bins; it needs small-bin handling before use on sparse datasets.
+
+The audit reproduced every saved median and both limits in all 936 bins across
+the four supplied groups (1-, 5-, and 10-degree tables), plus the 234 bins in
+`GUI_Output/DMSO_4dpi.mat`. Compared with exact symmetric binomial ranks,
+130 of the 936 supplied intervals would change, by at most two intensity units.
+This is a numerical comparison only: it does not validate the independence
+assumption. Pixels within the same eye are correlated, larger pixel counts give
+eyes unequal weight, and these pointwise intervals are neither between-animal
+confidence intervals nor simultaneous 95% bands over the entire profile.
+
+For treatment inference, preserve each animal's profile and account for any
+shared treatment well or experimental batch. The independent treatment unit
+must be established before selecting animal-level or hierarchical resampling.
+The legacy extraction and saved MAT files are unchanged by this display update.
+References: [NIST median confidence limits](https://www.itl.nist.gov/div898/software/dataplot/refman1/auxillar/mediancl.htm)
+and [Lord et al., SuperPlots](https://pmc.ncbi.nlm.nih.gov/articles/PMC7265319/).
+
+### Batch Extraction
+
+For batch processing, the same adapter can be called directly:
+
+```matlab
+config = struct('ROIdir', '/path/to/ROIs', ...
+    'IMGdir', '/path/to/TIFs', 'Outputdir', '/path/to/output', ...
+    'GroupName', 'DMSO_4dpi', 'Channel', 3, 'Overwrite', false);
+[data, outputFile] = rpegen_run(config);
+```
+
+### Permutation Runtime and Precision
 
 The interactive parallel path uses `parfeval` futures for progress and cancellation;
 script calls without callbacks retain `parfor`. Both execute the same per-bin
@@ -269,7 +324,19 @@ Apple GPUs are not supported for MATLAB computation on macOS; CPU parallelism
 is the supported acceleration used here. See
 [MathWorks Mac requirements](https://www.mathworks.com/support/requirements/matlab-mac.html).
 
-### Example-data verification
+The optional second output contains exceedance counts, actual repetitions,
+resolution, and exact binomial 95% Monte Carlo limits. The code example stores these
+in `permutation_diagnostics`, flagging bins whose interval spans 0.05. These
+are pointwise simulation-error intervals, not biological CIs or a multiple-testing
+correction. A permutation p-value of zero means no exceedance was observed, not that
+the true tail probability is zero. The recommended `(b+1)/(B+1)` correction is
+**not applied**, pending approval to change the published p-value calculation.
+See [MathWorks binofit](https://www.mathworks.com/help/stats/binofit.html) and
+[Phipson and Smyth](https://gksmyth.github.io/pubs/PermPValuesPreprint.pdf).
+
+## Verification
+
+### Example-Data Benchmarks
 
 With the current 10,000-50,000 Auto limits and 0.002 precision target on MATLAB
 R2026b, the full DMSO 4 dpi versus IWR1 4 dpi GUI comparison (180 one-degree
@@ -293,15 +360,7 @@ not batching alone, supplies the demonstrated speedup. The scripts in
 `comparison_preview` and `tests/verify_rpegen_update.m` regenerate comparison
 reports and figures. Generated outputs are excluded from the repository.
 
-The optional second output contains exceedance counts, actual repetitions,
-resolution, and exact binomial 95% Monte Carlo limits. The script keeps these
-in `permutation_diagnostics`, flagging bins whose interval spans 0.05. These
-are pointwise simulation-error intervals, not biological CIs or a multiple-testing
-correction. A permutation p-value of zero means no exceedance was observed, not that
-the true tail probability is zero. The recommended `(b+1)/(B+1)` correction is
-**not applied**, pending approval to change the published p-value calculation.
-See [MathWorks binofit](https://www.mathworks.com/help/stats/binofit.html) and
-[Phipson and Smyth](https://gksmyth.github.io/pubs/PermPValuesPreprint.pdf).
+### Regression Checks
 
 Run the regression checks in MATLAB with:
 
