@@ -37,6 +37,15 @@ filename = 'DMSO_4dpi.mat';
 % Location in the tif stack of the brightfield image
 bf_tif_loc = 3;     % (e.g., 3rd tiff in the tiff stack here)
 
+% Optional configuration supplied by the GUI or batch runner.
+if exist('rpegenConfig', 'var')
+    ROIdir = rpegenConfig.ROIdir;
+    IMGdir = rpegenConfig.IMGdir;
+    Outputdir = rpegenConfig.Outputdir;
+    filename = [rpegenConfig.GroupName '.mat'];
+    bf_tif_loc = rpegenConfig.Channel;
+end
+
 % NO NEED TO ALTER ANYTHING BELOW HERE UNLESS YOU ARE MODIFYING THE CODE
 %------------------------------------------------------------------------------------
 %% Check that user has the Image Processing Toolbox installed
@@ -114,6 +123,9 @@ clear x X
 
 %% Loop through the BW masks to create the centerline and distance data by calling centderfunc.m
 for z = 1:size(data.ROIBW,1);
+    if exist('rpegenConfig', 'var')
+        rpegenConfig.ProgressFcn(0.15 + 0.2*z/size(data.ROIBW,1), 'Extracting centerlines');
+    end
     [dist,xl,yl] = centderfunc(data.ROIBW{z, 1}); % Call the centderfunc.m file here
     xl = transpose(xl);
     yl = transpose(yl);
@@ -171,6 +183,9 @@ sprintf('7 of 10 Steps Done - Next step takes a bit longer...')
 data.RAW_data = table([],[], [], 'VariableNames',{'IMG_name' 'Angle' 'Raw_Data'});
 
 for x = 1:size(data.IMG,1);
+    if exist('rpegenConfig', 'var')
+        rpegenConfig.ProgressFcn(0.4 + 0.35*x/size(data.IMG,1), 'Measuring intensity');
+    end
     for z = 1:size(data.CLine{x, 1},1);
         idc = find(data.CIdx{x,1} == data.CLine{x, 1}.ind(z));
         IMG_lin = reshape(data.IMG{x,1},[],1);
@@ -293,72 +308,14 @@ sprintf('File Saved. Saving QC plots to output folder... ')
 clear D nm
 
 %% Save and plot QC plots to ouput folder as PDFs
-% Set up the figure
-figure('Position',[0 0 2100 800], 'DefaultAxesFontSize',16, 'defaultTextFontName', 'Calibri');
-
-% Run through each IMG and create and save a 3-panel figure to PDF
-for x = 1:length(data.IMG);
-    %This is the polyshape of the ROI
-    pgon = polyshape(data.ROIxy{x,1}(:,1), data.ROIxy{x,1}(:,2));
-    z = 1;
-    
-    % A - ROI overlaid on the IMG
-    a = subplot(1, 3, z);
-    imagesc(data.IMG{x,1})
-    colormap(a,'gray')
-    c1 = colorbar;
-    c1.Visible = 'on';
-    ylabel(c1,'Pixel Intensity (0-255)','FontSize',16,'Rotation',270);
-    c1.Label.Position(1) = 5;
-    daspect(a,[1 1 1])
-    hold on
-    plot(pgon, 'EdgeColor', 'r', 'FaceColor', 'none', 'Linewidth', 1)
-    hold off
-
-    % B - ROI with angular distance calculated for each centerline pixel
-    b = subplot(1, 3, z+1);
-
-    %The polyshape CLine values have to be corrected when using plot here because image Y axes are from the top down 
-    pgon = polyshape(data.ROIxy{x,1}(:,1), size(data.IMG{x, 1},1) - data.ROIxy{x,1}(:,2));
-    
-    plot(pgon, 'EdgeColor', 'k', 'FaceColor', 'none', 'Linewidth', 2)
-    hold on
-    scatter(data.CLine{x,1}.x,size(data.IMG{x, 1},1) - data.CLine{x,1}.y, 50, data.CLine{x,1}.angle, 'fill')
-    colormap(b, 'turbo')
-    c2 = colorbar;
-    c2.Visible = 'on';
-    ylabel(c2,'Angular Distance (degrees)','FontSize',16,'Rotation',270);
-    c2.Label.Position(1) = 5;
-    ylim([0 size(data.IMG{x, 1},1)])
-    xlim([0 size(data.IMG{x, 1},2)])
-    axis square
-    hold off
-
-    % C - ROI with the median intensity value calculated for each
-        % centerline pixel and indices
-    c = subplot(1, 3, z+2);
-    plot(pgon, 'EdgeColor', 'k', 'FaceColor', 'none', 'Linewidth', 2)
-    hold on
-    scatter(data.CLine{x,1}.x,size(data.IMG{x, 1},1) - data.CLine{x,1}.y, 50, data.CLine{x,1}.median, 'fill')
-    colormap(c, 'turbo')
-    c3 = colorbar;
-    c3.Visible = 'on';
-    ylabel(c3,'Median Intensity Value','FontSize',16,'Rotation',270);
-    c3.Label.Position(1) = 5;
-    ylim([0 size(data.IMG{x, 1},1)])
-    xlim([0 size(data.IMG{x, 1},2)])
-    axis square
-    hold off
-
-    f = gcf;
-    name = strcat(data.IMGname{x,1},'_QC_plots.pdf')
-    exportgraphics(f,name)
-
-    clf
+if exist('rpegenConfig', 'var')
+    rpegen_export_qc(data,Outputdir,@(fraction,message) rpegenConfig.ProgressFcn(0.8+0.19*fraction,message));
+else
+    rpegen_export_qc(data,Outputdir);
 end
-
-close
 
 %% Clear all data in the workspace
 
-clear all
+if ~exist('rpegenConfig', 'var')
+    clear all
+end

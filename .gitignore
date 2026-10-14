@@ -1,2 +1,9 @@
 
 .DS_Store
+*.asv
+/GUI_Output/
+/output/
+/comparison_preview/*.png
+/comparison_preview/*.pdf
+/comparison_preview/*.mat
+/comparison_preview/*.csv
