@@ -41,18 +41,28 @@ data_B = IWR1_4dpi.RAW_data;
 %--------------------------------------------------------------------------
 bin_sz = 1;                     % Default is 1 degree bins but you can change the number of degrees you want each bin to encompass here
 pval = zeros(180/bin_sz,1);     % Intiating the variable that will store all of the p-values
-reps = 20000;                   % # of permutations to run for each bin (bigger # = longer processing time but more statistically robust) 
-
-for x=bin_sz:bin_sz:180;
-    z=x/bin_sz;
-    ida = find(data_A.Angle >= x-bin_sz & data_A.Angle < x);
-    idb = find(data_B.Angle >= x-bin_sz & data_B.Angle < x);
-    pval(z,1) = permsim(data_A.Raw_Data(ida),data_B.Raw_Data(idb),reps);
-    perm_status = sprintf('%.1f%% complete',100*z/(180/bin_sz))
-end
+reps = 'auto';                  % Or a fixed number, e.g. 10000 or 50000
+time_budget_seconds = 300;      % Five-minute soft budget for the comparison, excluding plots
+auto_options = struct('HalfWidth',0.002,'MinIterations',10000,'MaxIterations',50000, ...
+    'TimeBudgetSeconds',time_budget_seconds,'UseParallel',true,'NumWorkers',4);
+fprintf('Permutation mode: %s; auto budget: %.0f seconds (10k minimum / 50k maximum per bin).\n', ...
+    string(reps),time_budget_seconds);
+[permutation_diagnostics,permutation_run] = rpegen_permutation_profile( ...
+    data_A,data_B,bin_sz,reps,auto_options);
+pval = permutation_diagnostics.LegacyP;
 
 % This variable is used for plotting with pval in Fig 2B below
 pval_x=bin_sz:bin_sz:180; pval_x=pval_x-(bin_sz/2);
+fprintf('%d bins have Monte Carlo intervals spanning 0.05; %d have zero exceedances.\n', ...
+    nnz(permutation_diagnostics.NearThreshold),nnz(permutation_diagnostics.Exceedances==0));
+fprintf('Finished in %.1f seconds using %d CPU worker(s); %d-%d draws per bin.\n', ...
+    permutation_run.ElapsedSeconds,permutation_run.Workers, ...
+    min(permutation_diagnostics.Iterations),max(permutation_diagnostics.Iterations));
+if permutation_run.ElapsedSeconds>time_budget_seconds
+    fprintf('The estimated time budget was exceeded; the minimum iteration count takes precedence.\n');
+end
+% These pointwise intervals measure simulation error, not biological uncertainty.
+% A legacy p=0 means no exceedances were observed, not an exact zero probability.
 
 clear x z ida idb reps data_A data_B perm_status
 
@@ -113,7 +123,7 @@ g.draw();
 
 % Export figure to a PDF
 f = gcf;
-exportgraphics(f,'Heatmaps_fig.pdf')
+rpegen_export_figure(f,'Heatmaps_fig.pdf')
 
 clear x1 x2 x3 x4 y1 y2 y3 y4 f g cmap bin_num ans data nms z
 
@@ -233,6 +243,6 @@ text(43,0.075,{'95% CI'},'Parent',g(2,1).facet_axes_handles(1),'FontName','Calib
 
 % Export figure to a PDF
 f = gcf;
-exportgraphics(f,'Median_pvalue_5_deg_bin_fig.pdf')
+rpegen_export_figure(f,'Median_pvalue_5_deg_bin_fig.pdf')
 
 clear a b g f ans idx grps x polcol
